@@ -1,0 +1,17 @@
+@font-face { src: url("/fonts/text/normal.woff2") format("woff2");
+	font-family: "text"; font-style: normal; font-weight: normal; }
+@font-face { src: url("/fonts/text/bold.woff2") format("woff2");
+	font-family: "text"; font-style: normal; font-weight: bold; }
+@font-face { src: url("/fonts/text/italic.woff2") format("woff2");
+	font-family: "text"; font-style: italic; font-weight: normal; }
+@font-face { src: url("/fonts/text/lighter.woff2") format("woff2");
+	font-family: "text"; font-style: normal; font-weight: 300; }
+
+@font-face { src: url("/fonts/code/regular.woff2") format("woff2");
+	font-family: "code"; font-style: normal; font-weight: normal; }
+
+body {
+	font-family: "text", system-ui, "Segoe UI", sans-serif; }
+
+code {
+	font-family: "code", ui-monospace, monospace !important; }

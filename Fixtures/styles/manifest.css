@@ -1,0 +1,93 @@
+/* #include prism/!prism.css */
+/* #include styles/!fonts.css */
+
+html {
+	font-size: 125%;
+}
+
+@media (width <= 430px) {
+	html {
+		font-size: 100%;
+	}
+}
+
+body {
+  color: #333;
+  line-height: 1.5rem;
+  max-width: calc(768px - 3rem);
+  padding: 1.5rem;
+  margin: auto;
+}
+
+header {}
+
+header small {
+  color: dimgray;
+}
+
+main {}
+
+footer {
+  font-size: .875rem;
+  margin-bottom: 5rem;
+  margin-top: 5rem;
+  text-align: center;
+}
+
+h1, h2, h3 {
+	color: black;
+	font-weight: bold;
+	margin-bottom: 0;
+}
+
+h1 {
+	font-size: 4rem;
+	font-weight: bolder;
+	margin-top: 5rem;
+	line-height: 4.5rem;
+}
+
+h2 {
+	font-size: 2rem;
+	margin-top: 5rem;
+	line-height: 2.5rem;
+}
+
+h3 {
+	font-size: 1.5rem;
+	margin-top: 3rem;
+	line-height: 2rem;
+}
+
+a {
+	background-color: aliceblue;
+	border-radius: .1rem;
+	color: royalblue;
+	margin: 0 -.1rem;
+	padding: 0 .1rem;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+p, pre {
+	margin: 1.5rem 0;
+}
+
+p.lede {
+	color: black;
+	font-size: 1.5rem;
+	font-weight: 300;
+	line-height: 2rem;
+}
+
+pre {
+  border-radius: .1rem;
+  font-size: .875rem !important;
+}
+
+p code {
+  background-color: seashell;
+  color: firebrick;
+}
