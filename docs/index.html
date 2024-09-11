@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alternator</title>
+    <link rel="apple-touch-icon-precomposed" href="https://jarrodtaylor.github.io/alternator/apple-touch-icon.png">
+    <link rel="icon" type="image/x-icon" href="https://jarrodtaylor.github.io/alternator/favicon.ico">
+    <link rel="stylesheet" href="styles/manifest.css">
+    <script src="scripts/prism.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1><span style="color: firebrick">&#9095;</span>Alternator</h1>
+      <small><strong>al·ter·na·tor:</strong>
+        A device that converts mechanical energy to electrical energy.</small>
+    </header>
+    <main>
+      <p class="lede">
+  Alternator is a CLI tool for building simple, static sites on your Mac.
+  It sits in the sweet spot between tedious hand coding and heavy-handed frameworks.
+</p><p>You can use layouts, includes, and variables to create a site that doesn't need a server app to run or a frontend library to render.</p><h2>Install</h2><p>Download the latest release <a href="releases/alternator-1.0.0.pkg">here</a>.</p><p>The installer will add the <code>alternator</code> executable to <code>/usr/local/bin</code>.</p><h2>Quick Start</h2><p>Run <code>alternator --help</code> for a quick reference.</p><pre><code class="language-bash">$ alternator --help
+
+OVERVIEW: Alternator builds simple, static sites.
+
+Visit https://jarrodtaylor.github.io/alternator to learn more.
+
+USAGE: alternator [&lt;source&gt;] [&lt;target&gt;] [--port &lt;port&gt;]
+
+ARGUMENTS:
+  &lt;source&gt;                Path to your source directory. (default: .)
+  &lt;target&gt;                Path to your target directory. (default: &lt;source&gt;/_build)
+
+OPTIONS:
+  -p, --port &lt;port&gt;       Port for the localhost server.
+  --version               Show the version.
+  -h, --help              Show help information.
+</code></pre><p>Alternator uses the files from <code>&lt;source&gt;</code> to build your site into <code>&lt;target&gt;</code>.</p><pre><code class="language-bash">$ alternator path/to/source path/to/publish
+</code></pre><p><code>&lt;source&gt;</code> can be anything you want &mdash; Alternator doesn't care about project structure and doesn't come with any code generators.</p><p>Optionally, you can give Alternator a <code>--port</code> and it'll rebuild <code>&lt;source&gt;</code> after each change and make <code>&lt;target&gt;</code> available on localhost at the specified port.</p><pre><code class="language-bash">$ alternator path/to/source path/to/publish --port 8080
+[watch] watching path/to/source for changes
+[serve] serving path/to/publish on http://localhost:8080
+^c to stop
+</code></pre><h2>Building Your Site</h2><p>Each time Alternator runs, it looks at everything in <code>&lt;source&gt;</code> and builds any file that's been added or modified since the last run.</p><h3>Ignoring Files</h3><p>Append a <code>!</code> to a filename and Alternator <em>not</em> move it to <code>&lt;target&gt;</code>.</p><p>For example, <code>path/to/source/!layout.html</code> can be used as a layout without being copied to <code>path/to/publish/!layout.html</code>.</p><h3>Copying Assets</h3><p>Files that don't need to be processed, such as assets, are copied as-is to <code>&lt;target&gt;</code>.</p><h3>Pruning <code>&lt;target&gt;</code></h3><p>After building, Alternator will check for any files or folders in <code>&lt;target&gt;</code> that have been removed from <code>&lt;source&gt;</code> and delete them.</p><h2>Rendered Files</h2><p><code>.css</code>, <code>.htm</code>, <code>.html</code>, <code>.js</code>, <code>.md</code>, <code>.rss</code>, <code>.svg</code>, and <code>.xml</code> files are rendered before being copied to <code>target</code>.</p><p>Rendering will expand includes, replace variables with their values, wrap content layouts, and convert markdown to HTML.</p><h3>Metadata and Variables</h3><p>Metadata is defined at the top of files as key/value pairs between <code>---</code> lines.</p><p>Any metadata prefixed with <code>@</code> is considered a variable and can be used inside code comments.</p><pre><code class="language-html">---
+@title: Hello, world!
+---
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;&lt;!-- @title --&gt;&lt;/title&gt;
+  &lt;/head&gt;
+&lt;/html&gt;
+</code></pre><p>...renders as:</p><pre><code class="language-html">&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Hello, world!&lt;/title&gt;
+  &lt;/head&gt;
+&lt;/html&gt;
+</code></pre><p>Each type of file uses its native comment syntax.</p><p><code>&lt;!-- @foo --&gt;</code>, <code>/* @foo */</code>, and <code>∕∕ @foo</code> all work.</p><p>Variables can define fallback values using <code>??</code>. In this example, <code>@title</code> is defined while <code>@foo</code> is not.</p><pre><code class="language-html">---
+@title: Hello, world!
+---
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;&lt;!-- @title ?? My Webpage --&gt;&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;!-- @foo ?? bar --&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>...renders as:</p><pre><code class="language-html">&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Hello, world!&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    bar
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre><h3>Layouts</h3><p>A file can use the <code>#layout</code> macro in its metadata to point to the layout file it will be rendered into.</p><p>A layout file uses the <code>#content</code> macro to define where its included file is rendered.</p><p>Variables defined in the included file's metadata will override those defined in layouts.</p><p>For example, an about page <code>path/to/source/about.html</code>:</p><pre><code class="language-html">---
+#layout: !design.html
+@title: About Me
+---
+&lt;p&gt;This is an about page.&lt;/p&gt;
+</code></pre><p>...will be rendered inside <code>path/to/source/!design.html</code>:</p><pre><code class="language-html">&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;&lt;!-- @title ?? My Website --&gt;&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;!-- #content --&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>...to create <code>target/about.html</code>:</p><pre><code class="language-html">&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;About Me&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;p&gt;This is an about page.&lt;/p&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre><h3>Includes</h3><p>Files can be included in other files with the <code>#include</code> macro.</p><p>Using the following <code>path/to/source/blog.html</code>:</p><pre><code class="language-html">&lt;html&gt;
+  &lt;body&gt;
+    &lt;!-- #include posts/!one.md --&gt;
+    &lt;!-- #include posts/!two.md --&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>...with <code>posts/!one.md</code> and <code>posts/!two.md</code> (notice the <code>!</code> in the filenames &mdash; <code>one.md</code> and <code>two.md</code> will not be copied to <code>target</code>):</p><pre><code class="language-md">## Post One
+
+This is the first post.
+</code></pre><pre><code class="language-md">## Post Two
+
+This is the second post.
+</code></pre><p>...will render <code>target/blog.html</code> as:</p><pre><code class="language-html">&lt;html&gt;
+  &lt;body&gt;
+    &lt;h2&gt;Post One&lt;/h2&gt;
+    &lt;p&gt;This is the first post.&lt;/p&gt;
+    &lt;h2&gt;Post Two&lt;/h2&gt;
+    &lt;p&gt;This is the second post.&lt;/p&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>The <code>#include</code> macro can pass variables to included files using <code>++</code>.</p><p>These variables will override those set in the included file's metadata.</p><p>For example, a generic blog post file <code>path/to/source/posts/!generic.md</code>:</p><pre><code class="language-md">## &lt;!-- @name --&gt;
+
+&lt;!-- @content ?? This is some generic content. --&gt;
+</code></pre><p>...can be included in <code>path/to/source/blog.html</code> multiple times with different variable values:</p><pre><code class="language-html">&lt;html&gt;
+  &lt;body&gt;
+    &lt;!-- #include posts/!generic.md ++ @name: My Blog Post --&gt;
+    &lt;!-- #include posts/!generic.md ++ @name: My Other Post ++ @content: Some new content. --&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>...to create a <code>path/to/publish/blog.html</code>:</p><pre><code class="language-html">&lt;html&gt;
+  &lt;body&gt;
+    &lt;h2&gt;My Blog Post&lt;/h2&gt;
+    &lt;p&gt;This is some generic content.&lt;/p&gt;
+    &lt;h2&gt;My Other Post&lt;/h2&gt;
+    &lt;p&gt;Some new content.&lt;/p&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>A file being included with the <code>#include</code> macro will not use a layout even if one is defined in its metadata. To force a nested layout, add <code>#forceLayout: true</code> to the included file's metadata or pass it in as part of the <code>#include</code> syntax of the including file.</p>
+    </main>
+    <footer>
+      <a href="https://jarrodtaylor.me/readme">Jarrod Taylor</a>
+      &centerdot;
+      <a href="https://github.com/jarrodtaylor/alternator">View Source</a>
+      &centerdot;
+      <a href="mailto:email@jarrodtaylor.me">Report a Bug</a>
+    </footer>
+  </body>
+</html>
